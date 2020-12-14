@@ -1,5 +1,6 @@
 'use-strict';
 import mongoose from "mongoose";
+import mongoErrorHandler from "../helpers/services/mongoErrorHandler.js";
 import { exampleSchema } from "../models/exampleModel.js";
 import {
 	allSchemaFieldsPresenceShield,
@@ -28,13 +29,7 @@ export function newExample( req, res ) {
 
 	newDocument.save(( err, doc ) => {
 		if ( err ) {
-			if ( process.env.NODE_ENV === 'development' )
-				res.status(500).send(err);
-			else res.status(400).send({
-				"code": "DATABASE_ERROR",
-				"message": "An occus while processing your request on our database.",
-				"data": null
-			})
+			mongoErrorHandler(res, err);
 		} else {
 			res.status(201).send(doc);
 		}
@@ -45,13 +40,7 @@ export function newExample( req, res ) {
 export function getAllExamples( req, res ) {
 	ExampleModel.find({}, ( err, doc ) => {
 		if ( err ) {
-			if ( process.env.NODE_ENV === 'development' )
-				res.status(500).send(err);
-			else res.status(400).send({
-				"code": "DATABASE_ERROR",
-				"message": "An occus while processing your request on our database.",
-				"data": null
-			})
+			mongoErrorHandler(res, err);
 		} else {
 			res.send(doc);
 		}
@@ -62,13 +51,7 @@ export function getAllExamples( req, res ) {
 export function getExampleById( req, res ) {
 	ExampleModel.findById(req.params.id, ( err, test ) => {
 		if ( err ) {
-			if ( process.env.NODE_ENV === 'development' )
-				res.status(500).send(err);
-			else res.status(400).send({
-				"code": "DATABASE_ERROR",
-				"message": "An occus while processing your request on our database.",
-				"data": null
-			})
+			mongoErrorHandler(res, err);
 		} else {
 			res.send(test);
 		}
@@ -83,13 +66,7 @@ export function replaceExampleById( req, res ) {
 		new: true, // Force to return the new updated object
 	}, ( err, test ) => {
 		if ( err ) {
-			if ( process.env.NODE_ENV === 'development' )
-				res.status(500).send(err);
-			else res.status(400).send({
-				"code": "DATABASE_ERROR",
-				"message": "An occus while processing your request on our database.",
-				"data": null
-			})
+			mongoErrorHandler(res, err);
 		} else {
 			res.status(201).send(test);
 		}
@@ -100,25 +77,13 @@ export function replaceExampleById( req, res ) {
 export function deleteTestByID( req, res ) {
 	ExampleModel.findById({ _id: req.params.id }, ( err, doc ) => {
 		if ( err ) {
-			if ( process.env.NODE_ENV === 'development' )
-				res.status(500).send(err);
-			else res.status(400).send({
-				"code": "DATABASE_ERROR",
-				"message": "An occus while processing your request on our database.",
-				"data": null
-			})
+			mongoErrorHandler(res, err);
 		} else if ( !doc ) {
 			res.send({ "message": "No document" });
 		} else {
 			ExampleModel.deleteOne({ _id: req.params.id }, {}, ( err, result ) => {
 				if ( err ) {
-					if ( process.env.NODE_ENV === 'development' )
-						res.status(500).send(err);
-					else res.status(400).send({
-						"code": "DATABASE_ERROR",
-						"message": "An occurs while processing your request on our database.",
-						"data": null
-					})
+					mongoErrorHandler(res, err);
 				} else {
 					res.send({ "message": "successfully deleted" });
 				}
