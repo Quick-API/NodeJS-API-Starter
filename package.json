@@ -1,0 +1,22 @@
+{
+  "name": "NodeJS-API-Starter",
+  "version": "1.0.0",
+  "description": "A cloneable project is intended to make it easier to start a new API project using NodeJS technology.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon ./index.js"
+  },
+  "type": "module",
+  "repository": "git@github.com:Quick-API/NodeJS-API-Starter.git",
+  "author": "Julien SEIXAS (MrZyr0) <32927775+MrZyr0@users.noreply.github.com>",
+  "license": "MPL-2.0",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.11.7"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "nodemon": "^2.0.6"
+  }
+}
