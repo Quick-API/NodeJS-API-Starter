@@ -3,17 +3,21 @@ import express from 'express';
 import mongoose from 'mongoose';
 import { createRequire } from 'module';
 import { normalizeNodeEnv } from "./src/helpers/services/nodeEnvService.js";
+import { setupEnvVars } from "./src/helpers/services/nodeEnvService.js";
 import allRoutes from "./src/routes/index.js";
 
 if ( process.env.NODE_ENV === undefined ) {
 	const require = createRequire(import.meta.url);
 	require('dotenv').config();
 	console.log(`[SERVER] dotenv of module imports`)
+	console.log(`[CONFIG] Setup dotenv modules`)
 }
 
 normalizeNodeEnv();
 
 const { NODE_ENV, DB_URI, LISTENING_PORT } = process.env;
+setupEnvVars();
+const { NODE_ENV, DB_URI, LISTENING_PORT, LOG_ENABLED, LOG_PATH, LOG_FILE } = process.env;
 
 console.log(`[SERVER] Runs in env : ${ NODE_ENV }`);
 
