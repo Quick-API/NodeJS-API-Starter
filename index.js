@@ -7,6 +7,9 @@ import { createRequire } from 'module';
 import { setupEnvVars } from "./src/helpers/services/nodeEnvService.js";
 import allRoutes from "./src/routes/index.js";
 
+
+console.log(`\n\n---- SERVER START ----`);
+
 if ( process.env.NODE_ENV === undefined ) {
 	const require = createRequire(import.meta.url);
 	require('dotenv').config();
