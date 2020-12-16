@@ -5,7 +5,7 @@ export default function allRoutes( app ) {
 	const endpoint = process.env.API_ENDPOINT || '/api';
 
 	app.get(`/`, ( req, res ) => {
-		res.send(`Your API is on  ${ endpoint }`);
+		res.send(`Your API is on ${ endpoint }`);
 	});
 
 	app.get(`${ endpoint }/`, ( req, res ) => {
