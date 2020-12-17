@@ -5,10 +5,12 @@ export default {
 	"concurrency": 5,
 	"failFast": true,
 	"failWithoutAssertions": false,
-	"environmentVariables": {},
+	"environmentVariables": {
+		"NODE_ENV": "testing",
+	},
 	"verbose": true,
 	"require": [
-		"./src/tests/helpers/testEnvSetupService.js"
+		"./index.js",
 	],
 	"nodeArguments": [
 		"--trace-deprecation",
