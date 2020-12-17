@@ -1,4 +1,6 @@
 'use-strict';
+import { conditionalLog } from "./conditionnalPrint.js";
+
 
 function normalizeNodeEnv() {
 	if ( process.env.NODE_ENV.toString().toUpperCase() === "DEV" )
@@ -7,11 +9,6 @@ function normalizeNodeEnv() {
 		process.env.NODE_ENV = "production";
 	else if ( process.env.NODE_ENV === undefined || process.env.NODE_ENV === null )
 		process.env.NODE_ENV = "development";
-}
-
-function conditionalLog( print = true, message ) {
-	if ( print )
-		console.log(message);
 }
 
 export function setupEnvVars( printInfos = true ) {
