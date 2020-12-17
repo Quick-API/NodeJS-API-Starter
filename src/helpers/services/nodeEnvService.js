@@ -1,4 +1,5 @@
 'use-strict';
+import { createRequire } from "module";
 import { conditionalLog } from "./conditionnalPrint.js";
 
 
@@ -16,8 +17,15 @@ function normalizeNodeEnv() {
 		process.env.NODE_ENV = process.env.NODE_ENV.toString().toLowerCase();
 }
 
-export function setupEnvVars( printInfos = true ) {
+export async function setupEnvVars( printInfos = true ) {
 	conditionalLog( !isTestingEnvironment, `\n\n---- SERVER START ----`);
+
+	if ( process.env.DB_URI === undefined ) {
+		const require = createRequire(import.meta.url);
+		require('dotenv').config();
+		conditionalLog( !isTestingEnvironment,
+			`[CONFIG] Setup dotenv modules`);
+	}
 
 	if ( process.env.NODE_ENV ) normalizeNodeEnv();
 	else {
