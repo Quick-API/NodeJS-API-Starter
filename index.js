@@ -15,20 +15,19 @@ conditionalLog( !isTestingEnvironment, `[SERVER] Runs in env : ${ NODE_ENV }`);
 
 const app = express();
 
-mongoose.connect(DB_URI, {
+// TODO: hide login from the URI before log it
+try {
+	await mongoose.connect(DB_URI, {
 		useCreateIndex: true,
 		useFindAndModify: false,
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
-	})
-	// TODO: hide login from the URI before log it
-	.then(() => {
-		console.log(`[SERVER] Mongoose connected to server using URI “${ DB_URI }”`);
-	})
-	.catch(( err ) => {
-		console.log(`[SEVER] Mongoose as encounter an error`);
-		console.log(err);
 	});
+	conditionalLog( !isTestingEnvironment, `[SERVER] Mongoose is connected to database using URI “${ DB_URI }”`)
+} catch ( err ) {
+	console.log(`[SERVER] Mongoose as encounter an error to connect to database using URI “${ DB_URI }”`);
+	console.log(err);
+}
 
 if ( NODE_ENV === "development" ) {
 	app.use(morgan('[REQ] :method :url :status ~ :total-time ms'));
