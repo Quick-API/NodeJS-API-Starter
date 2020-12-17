@@ -3,13 +3,15 @@ import express from 'express';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
 import rfs from 'rotating-file-stream';
+import { conditionalLog } from "./src/helpers/services/conditionnalPrint.js";
+import { findOpenPort, isTestingEnvironment, setupEnvVars } from "./src/helpers/services/nodeEnvService.js";
 import allRoutes from "./src/routes/index.js";
 
 
 await setupEnvVars();
 const { NODE_ENV, DB_URI, LISTENING_PORT, LOG_ENABLED, LOG_PATH, LOG_FILE } = process.env;
 
-console.log(`[SERVER] Runs in env : ${ NODE_ENV }`);
+conditionalLog( !isTestingEnvironment, `[SERVER] Runs in env : ${ NODE_ENV }`);
 
 const app = express();
 
@@ -61,8 +63,8 @@ if ( NODE_ENV === "development" ) {
 				stream: errorsFileStream
 			}));
 
-		console.log(`[SERVER] Logging enabled !`);
-		console.log(`[SERVER] Errors will logging in ${ LOG_PATH }/errors/`);
+		conditionalLog( !isTestingEnvironment, `[SERVER] Logging enabled !`);
+		conditionalLog( !isTestingEnvironment, `[SERVER] Errors will logging in ${ LOG_PATH }/errors/`);
 
 		if ( process.env.LOG_ALL ) {
 			const successFileStream = rfs.createStream(streamFilenameOperator, {
@@ -80,9 +82,9 @@ if ( NODE_ENV === "development" ) {
 					stream: successFileStream
 				}));
 
-			console.log(`[SERVER] Success requests will logging in ${ LOG_PATH }/success/`);
-		} else console.log(`[SERVER] Only errors are logged, because the environment variable LOG_ALL is not true.`)
-	} else console.log(`[CONFIG] Logging disabled ! Set “LOG_ENABLED” to true in environment to enable it.`)
+			conditionalLog( !isTestingEnvironment, `[SERVER] Success requests will logging in ${ LOG_PATH }/success/`);
+		} else conditionalLog( !isTestingEnvironment, `[SERVER] Only errors are logged, because the environment variable LOG_ALL is not true.`)
+	} else conditionalLog( !isTestingEnvironment, `[CONFIG] Logging disabled ! Set “LOG_ENABLED” to true in environment to enable it.`)
 }
 
 app.use(express.json());
