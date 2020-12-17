@@ -16,7 +16,7 @@ export default function exampleRoutes( app, endpoint ) {
 	app.route(`${ endpoint }/examples/:id`)
 		.get([
 			exampleMiddleware.idParamChecker,
-			exampleMiddleware.specificIdParamChecker
+			// exampleMiddleware.specificIdParamChecker
 		], getExampleById)
 		.put([ exampleMiddleware.idParamChecker ], replaceExampleById)
 		.delete([ exampleMiddleware.idParamChecker ], deleteTestByID);
