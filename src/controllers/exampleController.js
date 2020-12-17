@@ -64,13 +64,18 @@ export function getExampleById( req, res ) {
 		if ( err ) {
 			if ( isTestingEnvironment )
 				res.status(500).send(err);
-			else res.status(400).send({
+			else res.status(404).send({
 				"code": "DATABASE_ERROR",
 				"message": "An error occurs while processing your request on our database.",
 				"data": null
 			})
 		} else {
-			res.send(test);
+			if ( test && Object.entries(test).length > 0 ) res.send(test);
+			else res.status(404).send({
+				"code": "RESOURCE_NOT_FOUND",
+				"message": "The resource you are looking for cannot be found.",
+				"data": null
+			})
 		}
 	})
 }
@@ -91,7 +96,7 @@ export function replaceExampleById( req, res ) {
 				"data": null
 			})
 		} else {
-			res.status(201).send(test);
+			res.status(200).send(test);
 		}
 	})
 }
