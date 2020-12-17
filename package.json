@@ -4,10 +4,17 @@
   "description": "A cloneable project is intended to make it easier to start a new API project using NodeJS technology.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ./index.js"
+    "test": "ava --verbose",
+    "test:dev": "ava --watch --verbose",
+    "start": "node ./index.js",
+    "start:dev": "nodemon ./index.js"
   },
   "type": "module",
+  "nodemonConfig": {
+    "ignore": [
+      "src/tests/*.*"
+    ]
+  },
   "repository": "git@github.com:Quick-API/NodeJS-API-Starter.git",
   "author": "Julien SEIXAS (MrZyr0) <32927775+MrZyr0@users.noreply.github.com>",
   "license": "MPL-2.0",
@@ -18,6 +25,7 @@
     "rotating-file-stream": "^2.1.3"
   },
   "devDependencies": {
+    "ava": "^3.14.0",
     "dotenv": "^8.2.0",
     "nodemon": "^2.0.6"
   }

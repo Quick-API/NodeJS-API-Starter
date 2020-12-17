@@ -4,6 +4,8 @@ function getMissingFields( schema, data ) {
 	let missingFields = [];
 
 	for ( const schemaObjProperty in schema.obj ) {
+		if ( schemaObjProperty === '_id' || schemaObjProperty === '__v' )
+			continue;
 		if ( schema.obj.hasOwnProperty(schemaObjProperty) && !data.hasOwnProperty(schemaObjProperty) )
 			missingFields.push(schemaObjProperty);
 	}
@@ -26,6 +28,8 @@ function getMissingRequiredFields( schema, data ) {
 	let missingFields = [];
 
 	for ( const schemaObjProperty in schema.obj ) {
+		if ( schemaObjProperty === '_id' || schemaObjProperty === '__v' )
+			continue;
 		if ( schema.obj.hasOwnProperty(schemaObjProperty)
 			&& schema.obj[schemaObjProperty].hasOwnProperty('required')
 			&& schema.obj[schemaObjProperty].required
@@ -40,6 +44,8 @@ function getBadTypedFields( schema, data ) {
 	let badTypedFields = [];
 
 	for ( const schemaObjProperty in schema.obj ) {
+		if ( schemaObjProperty === '_id' || schemaObjProperty === '__v' )
+			continue;
 		if ( data.hasOwnProperty(schemaObjProperty) ) {
 			let dataType = typeof data[schemaObjProperty];
 			dataType = dataType.charAt(0).toUpperCase() + dataType.slice(1);
@@ -47,7 +53,7 @@ function getBadTypedFields( schema, data ) {
 			switch ( schema.obj[schemaObjProperty].type.name ) {
 
 				case 'Array':
-					if ( !data[schemaObjProperty].isArray() ) {
+					if ( Array.isArray(!data[schemaObjProperty]) ) {
 						badTypedFields.push({
 							"field": schemaObjProperty,
 							"expected_type": "Array",

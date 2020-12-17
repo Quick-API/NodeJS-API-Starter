@@ -3,37 +3,31 @@ import express from 'express';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
 import rfs from 'rotating-file-stream';
-import { createRequire } from 'module';
-import { setupEnvVars } from "./src/helpers/services/nodeEnvService.js";
+import { conditionalLog } from "./src/helpers/services/conditionnalPrint.js";
+import { findOpenPort, isTestingEnvironment, setupEnvVars } from "./src/helpers/services/nodeEnvService.js";
 import allRoutes from "./src/routes/index.js";
 
-if ( process.env.NODE_ENV === undefined ) {
-	const require = createRequire(import.meta.url);
-	require('dotenv').config();
-	console.log(`[CONFIG] Setup dotenv modules`)
-}
 
-setupEnvVars();
+await setupEnvVars();
 const { NODE_ENV, DB_URI, LISTENING_PORT, LOG_ENABLED, LOG_PATH, LOG_FILE } = process.env;
 
-console.log(`[SERVER] Runs in env : ${ NODE_ENV }`);
+conditionalLog( !isTestingEnvironment, `[SERVER] Runs in env : ${ NODE_ENV }`);
 
 const app = express();
 
-mongoose.connect(DB_URI, {
+// TODO: hide login from the URI before log it
+try {
+	await mongoose.connect(DB_URI, {
 		useCreateIndex: true,
 		useFindAndModify: false,
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
-	})
-	// TODO: hide login from the URI before log it
-	.then(() => {
-		console.log(`[SERVER] Mongoose connected to server using URI “${ DB_URI }”`);
-	})
-	.catch(( err ) => {
-		console.log(`[SEVER] Mongoose as encounter an error`);
-		console.log(err);
 	});
+	conditionalLog( !isTestingEnvironment, `[SERVER] Mongoose is connected to database using URI “${ DB_URI }”`)
+} catch ( err ) {
+	console.log(`[SERVER] Mongoose as encounter an error to connect to database using URI “${ DB_URI }”`);
+	console.log(err);
+}
 
 if ( NODE_ENV === "development" ) {
 	app.use(morgan('[REQ] :method :url :status ~ :total-time ms'));
@@ -68,8 +62,8 @@ if ( NODE_ENV === "development" ) {
 				stream: errorsFileStream
 			}));
 
-		console.log(`[SERVER] Logging enabled !`);
-		console.log(`[SERVER] Errors will logging in ${ LOG_PATH }/errors/`);
+		conditionalLog( !isTestingEnvironment, `[SERVER] Logging enabled !`);
+		conditionalLog( !isTestingEnvironment, `[SERVER] Errors will logging in ${ LOG_PATH }/errors/`);
 
 		if ( process.env.LOG_ALL ) {
 			const successFileStream = rfs.createStream(streamFilenameOperator, {
@@ -87,16 +81,32 @@ if ( NODE_ENV === "development" ) {
 					stream: successFileStream
 				}));
 
-			console.log(`[SERVER] Success requests will logging in ${ LOG_PATH }/success/`);
-		} else console.log(`[SERVER] Only errors are logged, because the environment variable LOG_ALL is not true.`)
-	} else console.log(`[CONFIG] Logging disabled ! Set “LOG_ENABLED” to true in environment to enable it.`)
+			conditionalLog( !isTestingEnvironment, `[SERVER] Success requests will logging in ${ LOG_PATH }/success/`);
+		} else conditionalLog( !isTestingEnvironment, `[SERVER] Only errors are logged, because the environment variable LOG_ALL is not true.`)
+	} else conditionalLog( !isTestingEnvironment, `[CONFIG] Logging disabled ! Set “LOG_ENABLED” to true in environment to enable it.`)
 }
 
 app.use(express.json());
 app.use(express.static('public')); // Allows the API to serve static files in the public folder.
 
-app.listen(LISTENING_PORT, () => {
-	console.log(`[SERVER] Listening port : ${ LISTENING_PORT }`);
-});
+async function startServer( port ) {
+	const finalPort = await findOpenPort(port);
+
+	try {
+		app.listen(finalPort,
+			() => {
+				process.env.LISTENING_PORT = finalPort;
+				conditionalLog( !isTestingEnvironment, `[SERVER] Listening port : ${ finalPort }`);
+			})
+			.on('error', async () => {
+				conditionalLog( !isTestingEnvironment, `[SERVER] Error starting listening on ${ finalPort }, restart trying a new port`);
+				await startServer(finalPort + 1);
+			});
+	} catch ( e ) {
+		conditionalLog( !isTestingEnvironment, `[SERVER] Error caught starting listening on ${ finalPort }, restart trying a new port`);
+	}
+}
+
+await startServer(LISTENING_PORT);
 
 allRoutes(app);

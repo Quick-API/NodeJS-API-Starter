@@ -10,14 +10,14 @@ import { exampleMiddleware } from "../helpers/middlewares/exampleMiddleware.js";
 
 export default function exampleRoutes( app, endpoint ) {
 	app.route(`${ endpoint }/examples`)
-		.get(getAllExamples)
-		.post(newExample);
+		.post(newExample)
+		.get(getAllExamples);
 
 	app.route(`${ endpoint }/examples/:id`)
 		.get([
 			exampleMiddleware.idParamChecker,
-			exampleMiddleware.specificIdParamChecker
+			// exampleMiddleware.specificIdParamChecker
 		], getExampleById)
 		.put([ exampleMiddleware.idParamChecker ], replaceExampleById)
-		.delete([ exampleMiddleware.idParamChecker ], deleteTestByID)
+		.delete([ exampleMiddleware.idParamChecker ], deleteTestByID);
 }
