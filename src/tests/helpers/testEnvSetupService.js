@@ -1,11 +1,7 @@
 'use-strict';
-import { setupEnvVars } from '../../helpers/services/nodeEnvService.js';
-import { createRequire } from 'module';
+import mongoose from "mongoose";
 
-
-if ( process.env.DB_URI === undefined ) {
-	const require = createRequire(import.meta.url);
-	require('dotenv').config();
-}
-
-setupEnvVars(false);
+if ( process.env.TESTS_CLEAR_BD === "true" )
+	for ( const collection in mongoose.connection.collections ) {
+		mongoose.connection.collection(collection).drop();
+	}
