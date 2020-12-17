@@ -89,8 +89,24 @@ if ( NODE_ENV === "development" ) {
 app.use(express.json());
 app.use(express.static('public')); // Allows the API to serve static files in the public folder.
 
-app.listen(LISTENING_PORT, () => {
-	console.log(`[SERVER] Listening port : ${ LISTENING_PORT }`);
-});
+async function startServer( port ) {
+	const finalPort = await findOpenPort(port);
+
+	try {
+		app.listen(finalPort,
+			() => {
+				process.env.LISTENING_PORT = finalPort;
+				conditionalLog( !isTestingEnvironment, `[SERVER] Listening port : ${ finalPort }`);
+			})
+			.on('error', async () => {
+				conditionalLog( !isTestingEnvironment, `[SERVER] Error starting listening on ${ finalPort }, restart trying a new port`);
+				await startServer(finalPort + 1);
+			});
+	} catch ( e ) {
+		conditionalLog( !isTestingEnvironment, `[SERVER] Error caught starting listening on ${ finalPort }, restart trying a new port`);
+	}
+}
+
+await startServer(LISTENING_PORT);
 
 allRoutes(app);
