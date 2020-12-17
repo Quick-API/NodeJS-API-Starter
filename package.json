@@ -4,9 +4,10 @@
   "description": "A cloneable project is intended to make it easier to start a new API project using NodeJS technology.",
   "main": "index.js",
   "scripts": {
-    "test": "ava",
-    "test-watch": "ava --watch",
-    "start": "nodemon ./index.js"
+    "test": "ava --verbose",
+    "test:dev": "ava --watch --verbose",
+    "start": "node ./index.js",
+    "start:dev": "nodemon ./index.js"
   },
   "type": "module",
   "nodemonConfig": {
