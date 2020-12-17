@@ -6,7 +6,7 @@ import {
 	isDataHasRequiredSchemaFields,
 	isDataRespectSchemaTypes
 } from "../helpers/services/schemaService.js";
-
+import { isTestingEnvironment } from "../helpers/services/nodeEnvService.js";
 
 const ExampleModel = mongoose.model('ExampleModel', exampleSchema);
 
@@ -28,7 +28,7 @@ export function newExample( req, res ) {
 
 	newDocument.save(( err, doc ) => {
 		if ( err ) {
-			if ( process.env.NODE_ENV === 'development' )
+			if ( isTestingEnvironment )
 				res.status(500).send(err);
 			else res.status(400).send({
 				"code": "DATABASE_ERROR",
@@ -45,7 +45,7 @@ export function newExample( req, res ) {
 export function getAllExamples( req, res ) {
 	ExampleModel.find({}, ( err, doc ) => {
 		if ( err ) {
-			if ( process.env.NODE_ENV === 'development' )
+			if ( isTestingEnvironment )
 				res.status(500).send(err);
 			else res.status(400).send({
 				"code": "DATABASE_ERROR",
@@ -62,7 +62,7 @@ export function getAllExamples( req, res ) {
 export function getExampleById( req, res ) {
 	ExampleModel.findById(req.params.id, ( err, test ) => {
 		if ( err ) {
-			if ( process.env.NODE_ENV === 'development' )
+			if ( isTestingEnvironment )
 				res.status(500).send(err);
 			else res.status(400).send({
 				"code": "DATABASE_ERROR",
@@ -83,7 +83,7 @@ export function replaceExampleById( req, res ) {
 		new: true, // Force to return the new updated object
 	}, ( err, test ) => {
 		if ( err ) {
-			if ( process.env.NODE_ENV === 'development' )
+			if ( isTestingEnvironment )
 				res.status(500).send(err);
 			else res.status(400).send({
 				"code": "DATABASE_ERROR",
@@ -100,7 +100,7 @@ export function replaceExampleById( req, res ) {
 export function deleteTestByID( req, res ) {
 	ExampleModel.findById({ _id: req.params.id }, ( err, doc ) => {
 		if ( err ) {
-			if ( process.env.NODE_ENV === 'development' )
+			if ( isTestingEnvironment )
 				res.status(500).send(err);
 			else res.status(400).send({
 				"code": "DATABASE_ERROR",
@@ -112,7 +112,7 @@ export function deleteTestByID( req, res ) {
 		} else {
 			ExampleModel.deleteOne({ _id: req.params.id }, {}, ( err, result ) => {
 				if ( err ) {
-					if ( process.env.NODE_ENV === 'development' )
+					if ( isTestingEnvironment )
 						res.status(500).send(err);
 					else res.status(400).send({
 						"code": "DATABASE_ERROR",
