@@ -72,7 +72,7 @@ export async function setupEnvVars( printInfos = true ) {
 		process.env.LOG_PATH = './logs';
 	} else {
 		process.env.LOG_FILE = process.env.LOG_PATH.split('/')[process.env.LOG_PATH.split('/').length - 1];
-		process.env.LOG_PATH = process.env.LOG_PATH.replace(( '/' + LOG_FILE ), '');
+		process.env.LOG_PATH = process.env.LOG_PATH.replace(( '/' + process.env.LOG_FILE ), '');
 	}
 
 	if ( !process.env.TESTS_CLEAR_BD ) {
