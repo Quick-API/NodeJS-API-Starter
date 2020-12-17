@@ -7,44 +7,57 @@ function normalizeNodeEnv() {
 		process.env.NODE_ENV = "development";
 	else if ( process.env.NODE_ENV.toString().toUpperCase() === "PROD" )
 		process.env.NODE_ENV = "production";
+	else if ( process.env.NODE_ENV.toString().toUpperCase() === "TEST" ||
+		process.env.NODE_ENV.toString().toUpperCase() === "TESTING" )
+		process.env.NODE_ENV = "testing";
 	else if ( process.env.NODE_ENV === undefined || process.env.NODE_ENV === null )
-		process.env.NODE_ENV = "development";
+		process.env.NODE_ENV = "production";
+	else
+		process.env.NODE_ENV = process.env.NODE_ENV.toString().toLowerCase();
 }
 
 export function setupEnvVars( printInfos = true ) {
+	conditionalLog( !isTestingEnvironment, `\n\n---- SERVER START ----`);
+
 	if ( process.env.NODE_ENV ) normalizeNodeEnv();
 	else {
-		conditionalLog(printInfos,
+		conditionalLog( !isTestingEnvironment,
 			`[CONFIG] Environment variable “NODE_ENV“ isn't setup => using default value.`);
 		process.env.NODE_ENV = "production";
 	}
 
 	if ( !process.env.API_ENDPOINT ) {
-		conditionalLog(printInfos,
+		conditionalLog( !isTestingEnvironment,
 			`[CONFIG] Environment variable “API_ENDPOINT“ isn't setup => using default value.`);
 		process.env.API_ENDPOINT = '/api';
 	}
 
-	if ( !process.env.DB_URI ) {
+	if ( process.env.NODE_ENV === 'testing' )
+		if ( !process.env.DB_URI__TESTS ) {
+			conditionalLog(true,
+				`[CONFIG] Environment variable “DB_URI__TESTS“ is missing !`);
+			process.exit(1);
+		} else process.env.DB_URI = process.env.DB_URI__TESTS;
+	else if ( !process.env.DB_URI ) {
 		conditionalLog(true,
 			`[CONFIG] Environment variable “DB_URI“ is missing !`);
 		process.exit(1);
 	}
 
 	if ( !process.env.LISTENING_PORT ) {
-		conditionalLog(printInfos,
-			`[CONFIG] Environment variable “LISTENING_PORT“ isn't setup => using default value.`);
-		process.env.LISTENING_PORT = 4000
+		conditionalLog( !isTestingEnvironment,
+			`[CONFIG] Environment variable “LISTENING_PORT“ isn't setup => find open port.`);
+		process.env.LISTENING_PORT = "4000";
 	}
 
 	if ( !process.env.LOG_ENABLED ) {
-		conditionalLog(printInfos,
+		conditionalLog( !isTestingEnvironment,
 			`[CONFIG] Environment variable “LOG_ENABLED“ isn't setup => using default value.`);
-		process.env.LOG_ENABLED = true;
+		process.env.LOG_ENABLED = "true";
 	}
 
 	if ( !process.env.LOG_PATH ) {
-		conditionalLog(printInfos,
+		conditionalLog( !isTestingEnvironment,
 			`[CONFIG] Environment variable “LOG_PATH“ isn't setup => using default value.`);
 		process.env.LOG_FILE = 'logs.log';
 		process.env.LOG_PATH = './logs';
@@ -52,4 +65,16 @@ export function setupEnvVars( printInfos = true ) {
 		process.env.LOG_FILE = process.env.LOG_PATH.split('/')[process.env.LOG_PATH.split('/').length - 1];
 		process.env.LOG_PATH = process.env.LOG_PATH.replace(( '/' + LOG_FILE ), '');
 	}
+
+	if ( !process.env.TESTS_CLEAR_BD ) {
+		conditionalLog( isTestingEnvironment,
+			`[CONFIG] Environment variable “TESTS_CLEAR_BD“ isn't setup => using default value.`);
+		process.env.TESTS_CLEAR_BD = "false";
+	}
+
+	if ( process.env.NODE_ENV === "development" || process.env.NODE_ENV === "testing" )
+		process.env.VERBBOSE = "true";
 }
+
+export const isVerboseEnabled = process.env.VERBOSE === "true";
+export const isTestingEnvironment = process.env.NODE_ENV === "testing";
