@@ -32,7 +32,7 @@ export function newExample( req, res ) {
 				res.status(500).send(err);
 			else res.status(400).send({
 				"code": "DATABASE_ERROR",
-				"message": "An occus while processing your request on our database.",
+				"message": "An error occurs while processing your request on our database.",
 				"data": null
 			})
 		} else {
@@ -49,7 +49,7 @@ export function getAllExamples( req, res ) {
 				res.status(500).send(err);
 			else res.status(400).send({
 				"code": "DATABASE_ERROR",
-				"message": "An occus while processing your request on our database.",
+				"message": "An error occurs while processing your request on our database.",
 				"data": null
 			})
 		} else {
@@ -66,7 +66,7 @@ export function getExampleById( req, res ) {
 				res.status(500).send(err);
 			else res.status(400).send({
 				"code": "DATABASE_ERROR",
-				"message": "An occus while processing your request on our database.",
+				"message": "An error occurs while processing your request on our database.",
 				"data": null
 			})
 		} else {
@@ -87,7 +87,7 @@ export function replaceExampleById( req, res ) {
 				res.status(500).send(err);
 			else res.status(400).send({
 				"code": "DATABASE_ERROR",
-				"message": "An occus while processing your request on our database.",
+				"message": "An error occurs while processing your request on our database.",
 				"data": null
 			})
 		} else {
@@ -104,7 +104,7 @@ export function deleteTestByID( req, res ) {
 				res.status(500).send(err);
 			else res.status(400).send({
 				"code": "DATABASE_ERROR",
-				"message": "An occus while processing your request on our database.",
+				"message": "An error occurs while processing your request on our database.",
 				"data": null
 			})
 		} else if ( !doc ) {
@@ -116,11 +116,11 @@ export function deleteTestByID( req, res ) {
 						res.status(500).send(err);
 					else res.status(400).send({
 						"code": "DATABASE_ERROR",
-						"message": "An occurs while processing your request on our database.",
+						"message": "An error occurs while processing your request on our database.",
 						"data": null
 					})
 				} else {
-					res.send({ "message": "successfully deleted" });
+					res.send({ "message": "Successfully deleted" });
 				}
 			});
 		}
