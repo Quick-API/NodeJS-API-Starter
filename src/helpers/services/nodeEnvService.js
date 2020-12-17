@@ -1,6 +1,7 @@
 'use-strict';
 import { createRequire } from "module";
 import { conditionalLog } from "./conditionnalPrint.js";
+import request from "./request.js";
 
 
 function normalizeNodeEnv() {
@@ -86,3 +87,20 @@ export async function setupEnvVars( printInfos = true ) {
 
 export const isVerboseEnabled = process.env.VERBOSE === "true";
 export const isTestingEnvironment = process.env.NODE_ENV === "testing";
+
+export async function findOpenPort( entryPort ) {
+	const port = parseInt(entryPort);
+
+	if ( port >= 0 && port < 65536 ) {
+		try {
+			const result = await request.get('localhost', port);
+
+			if ( result )
+				return await findOpenPort(port + 1);
+			else
+				return port;
+		} catch ( e ) {
+			return port;
+		}
+	} else throw new Error('The API server listening port must be between 0 and 65536 !');
+}
